@@ -28,19 +28,20 @@ jobs:
 
       - name: Train (fast)
         env:
-          FAST_STOP_ITERS: '1'
+          FAST_STOP_ITERS: '10'
           FAST_NUM_WORKERS: '0'
-          FAST_TRAIN_BATCH: '1000'
-          FAST_ROLLOUT_LEN: '100'
+          FAST_TRAIN_BATCH: '200'
+          FAST_ROLLOUT_LEN: '50'
+          FAST_SMALL_MODEL: '1'
           RAY_DISABLE_MEMORY_MONITOR: '1'
         run: |
-          python train/train_rllib_ppo.py
+          PYTHONPATH=$PWD python -m train.train_rllib_ppo
 
       - name: Plot training
-        run: python eval/plot_training.py
+        run: PYTHONPATH=$PWD python -m eval.plot_training
 
       - name: Record random video (short)
-        run: python eval/record_video.py --max_steps 64 --out random.mp4
+        run: PYTHONPATH=$PWD python -m eval.record_video --max_steps 64 --out random.mp4
 
       - name: List artifacts
         run: ls -R runs || true && ls -l *.mp4 training_curve.png || true

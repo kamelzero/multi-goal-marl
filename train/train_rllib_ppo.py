@@ -50,7 +50,15 @@ if __name__ == "__main__":
 
     # Use Algorithm directly for simplicity with new API; save a checkpoint at the end
     from ray.rllib.algorithms import ppo as ppo_mod
-    algo = ppo_mod.PPO(config=algo_cfg.to_dict())
+    from ray.tune.logger import UnifiedLogger
+
+    def _logger_creator(cfg):
+        timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
+        logdir = os.path.join(trn["local_dir"], f"PPO_{timestr}")
+        os.makedirs(logdir, exist_ok=True)
+        return UnifiedLogger(cfg, logdir, loggers=None)
+
+    algo = ppo_mod.PPO(config=algo_cfg.to_dict(), logger_creator=_logger_creator)
     start_time = time.time()
     for i in range(stop_iter):
         result = algo.train()
@@ -62,7 +70,10 @@ if __name__ == "__main__":
         if time_limit_s and (time.time() - start_time) >= time_limit_s:
             print(f"FAST_TIME_LIMIT reached ({time_limit_s}s). Stopping early.")
             break
-    chkpt_dir = algo.save(checkpoint_dir=trn["local_dir"]).checkpoint.path
+    # Ensure absolute checkpoint directory exists (avoid pyarrow URI issues)
+    ckpt_base = os.path.abspath(trn["local_dir"]) if trn.get("local_dir") else os.path.abspath("runs")
+    os.makedirs(ckpt_base, exist_ok=True)
+    chkpt_dir = algo.save(checkpoint_dir=ckpt_base).checkpoint.path
     print(f"Saved checkpoint: {chkpt_dir}")
 
 
