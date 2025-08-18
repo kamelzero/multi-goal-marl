@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system deps
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install Python deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+
+      - name: Train (fast)
+        env:
+          FAST_STOP_ITERS: '1'
+          FAST_NUM_WORKERS: '0'
+          FAST_TRAIN_BATCH: '1000'
+          FAST_ROLLOUT_LEN: '100'
+          RAY_DISABLE_MEMORY_MONITOR: '1'
+        run: |
+          python train/train_rllib_ppo.py
+
+      - name: Plot training
+        run: python eval/plot_training.py
+
+      - name: Record random video (short)
+        run: python eval/record_video.py --max_steps 64 --out random.mp4
+
+      - name: List artifacts
+        run: ls -R runs || true && ls -l *.mp4 training_curve.png || true
+
+

@@ -1,0 +1,12 @@
+gymnasium
+pettingzoo[mpe]
+supersuit
+ray[rllib]
+numpy
+matplotlib
+pandas
+imageio[ffmpeg]
+imageio-ffmpeg
+torch
+
+

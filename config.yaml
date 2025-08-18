@@ -1,0 +1,23 @@
+env:
+  n_agents: 3
+  cover_radius: 0.1
+  collision_penalty: 1.0
+  action_penalty: 0.01
+  render_mode: null
+
+train:
+  algo: PPO
+  framework: torch
+  num_workers: 2
+  rollout_fragment_length: 200
+  train_batch_size: 16000
+  sgd_minibatch_size: 2048
+  num_sgd_iter: 10
+  gamma: 0.99
+  lr: 0.0003
+  fcnet_hiddens: [256, 256]
+  vf_share_layers: false
+  stop_training_iteration: 200
+  local_dir: runs
+
+
