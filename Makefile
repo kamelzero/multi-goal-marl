@@ -12,6 +12,7 @@ train:
 video:
 	$(RUNPY) -m eval.record_video --out random.mp4
 	@CKPT=$$(ls -dt runs/**/checkpoint_* 2>/dev/null | head -n1); \
+	if [ -z "$$CKPT" ] && [ -f runs/latest_checkpoint_path.txt ]; then CKPT=$$(cat runs/latest_checkpoint_path.txt); fi; \
 	if [ -z "$$CKPT" ]; then \
 		echo "No checkpoint found; using random policy for trained.mp4 (fast fallback)."; \
 		$(RUNPY) -m eval.record_video --out trained.mp4; \

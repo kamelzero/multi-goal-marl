@@ -21,6 +21,8 @@ Artifacts:
 
 CPU-only works; GPU is optional if available.
 
+More practical training guidance: see `TRAINING.md`.
+
 ### Repo layout
 
 ```
@@ -47,7 +49,7 @@ multi-goal-marl/
 - `train/rllib_env.py`: RLlib wrapper around the PettingZoo env (shared policy mapping).
 - `train/train_rllib_ppo.py`: trains PPO in RLlib; saves checkpoints to `runs/`.
 - `eval/record_video.py`: writes `random.mp4` and `trained.mp4` and can be used to record short smoke videos.
-- `eval/plot_training.py`: reads latest `runs/**/progress.csv` and saves `training_curve.png`.
+- `eval/plot_training.py`: reads logs and plots. Default saves `training_curve.png` for the latest run; `--all` aggregates all runs and writes `training_curve_all_iters.png` and `training_curve_all_steps.png`.
 - `docker/Dockerfile`: headless container with `ffmpeg` and Python deps.
 - `Makefile`: convenience targets.
 - `config.yaml`: environment and training hyperparameters.
