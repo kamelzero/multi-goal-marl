@@ -87,8 +87,19 @@ def rollout_frames(algo, env, policy_id="shared_policy", max_steps=500):
                 space = _agent_action_space(env, agent)
                 actions[agent] = space.sample()
             else:
-                act, _, _ = algo.get_policy(policy_id).compute_single_action(ob, explore=False)
-                actions[agent] = act
+                try:
+                    # New API first
+                    act, _ = algo.compute_single_action(ob, explore=False, policy_id=policy_id)
+                    actions[agent] = act
+                except Exception:
+                    try:
+                        # Older API fallback
+                        act, _, _ = algo.get_policy(policy_id).compute_single_action(ob, explore=False)
+                        actions[agent] = act
+                    except Exception as e:
+                        # As a last resort, fall back to random for this step/agent
+                        space = _agent_action_space(env, agent)
+                        actions[agent] = space.sample()
 
         step_out = env.step(actions)
         if isinstance(step_out, tuple) and len(step_out) == 5:
